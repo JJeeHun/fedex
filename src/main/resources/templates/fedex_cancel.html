@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fedex Cancel Shipment</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        .box {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .box > * {
+            height: 100%;
+            width: 100%;
+        }
+        #loading {
+            display: none;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #ededed7a;
+        }
+        #loading .loading-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .show {
+            display: block !important;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            flex-basis: 50%;
+            gap: 10px;
+            padding: 10px;
+        }
+        form div {
+            display: flex;
+            justify-content: space-between;
+        }
+        .primary {
+            background-color: #3479f4;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color: #ffffff;
+        }
+        .primary:hover {
+            background-color: #246BEAFF;
+        }
+        .primary:active {
+            background-color: #3479f4;
+        }
+        input {
+            width: 50%;
+        }
+        select {
+            width: 52%;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading"><div class="loading-box">Loading...</div></div>
+
+    <form action="" method="post" onsubmit="loadingDiv.classList.add('show')">
+        <div th:replace="fragments::home">Home</div>
+        <div>
+            <label for="trackingNumber">trackingNumber</label>
+            <input type="text" id="trackingNumber" th:name="trackingNumber" placeholder="740561073">
+        </div>
+
+        <button class="primary">Fedex 실행</button>
+    </form>
+
+    <div class="box">
+        <textarea id="result-container" readonly th:text="${result != null ? result : ''}"></textarea>
+    </div>
+
+    <script>
+        const loadingDiv = document.querySelector('#loading');
+        const textareaNode = document.querySelector('.box textarea');
+
+        if(textareaNode.textContent) {
+            const result = JSON.parse(textareaNode.textContent);
+            const isError = result.errors?.length > 0;
+
+            textareaNode.textContent = JSON.stringify(result, null, 2);
+
+            alert('Fedex 응답 '+ (isError ? '에러' : '성공'));
+
+        }
+    </script>
+</body>
+</html>

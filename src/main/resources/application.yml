@@ -1,0 +1,18 @@
+spring:
+
+mybatis:
+  type-aliases-package: com.example.fedex_json
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.example.fedex_json: debug
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+
+  port: 8081

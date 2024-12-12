@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fedex Create Shipment</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        .box {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            padding-right: 15px;
+        }
+        .box > * {
+            flex: 1;
+            width: 100%;
+            height: 50%;
+        }
+        #loading {
+            display: none;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #ededed7a;
+        }
+        #loading .loading-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .show {
+            display: block !important;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            flex-basis: 50%;
+            gap: 10px;
+            padding: 10px;
+        }
+        form div {
+            display: flex;
+            justify-content: space-between;
+        }
+        .primary {
+            background-color: #3479f4;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color: #ffffff;
+        }
+        .primary:hover {
+            background-color: #246BEAFF;
+        }
+        .primary:active {
+            background-color: #3479f4;
+        }
+        input {
+            width: 50%;
+        }
+        select {
+            width: 52%;
+        }
+        #label-box {
+            display: flex;
+            flex-direction: column;
+            gap: 70px;
+        }
+        #label-box img {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading"><div class="loading-box">Loading...</div></div>
+
+    <form action="" th:object="${ship}" method="post" onsubmit="loadingDiv.classList.add('show')">
+        <div th:replace="fragments::home">Home</div>
+        <div>
+            <label for="serviceType">serviceType</label>
+            <select id="serviceType" th:field="*{serviceType}">
+                <option th:each="serviceType : ${serviceTypes}" th:value="${serviceType}" th:text="${serviceType}">
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="thirdPartyAccount">thirdPartyAccount</label>
+            <input type="text" id="thirdPartyAccount" th:field="*{thirdPartyAccount}" placeholder="740561073">
+        </div>
+        <div>
+            <label for="totalWeight">totalWeight</label>
+            <input type="number" id="totalWeight" th:field="*{totalWeight}" placeholder="10">
+        </div>
+        <div>
+            <label for="recipientPerson">recipientPerson</label>
+            <input type="text" id="recipientPerson" th:field="*{recipientPerson}" placeholder="ASHLEY JORGENSEN">
+        </div>
+        <div>
+            <label for="recipientCompany">recipientCompany</label>
+            <input type="text" id="recipientCompany" th:field="*{recipientCompany}" placeholder="DIAMOND L DESIGN">
+        </div>
+        <div>
+            <label for="recipientPhone">recipientPhone</label>
+            <input type="text" id="recipientPhone" th:field="*{recipientPhone}" placeholder="8017988591">
+        </div>
+        <div>
+            <label for="recipientStreetLines">recipientStreetLines</label>
+            <div style="display:flex; flex-direction: column; flex-basis: 52%; gap: 10px;">
+                <input style="width: 100%" type="text" id="recipientStreetLines" th:name="recipientStreetLines" th:value="${ship.recipientStreetLines.get(0)}" placeholder="1283 EXPRESSWAY LANE">
+                <input style="width: 100%" type="text" th:name="recipientStreetLines" th:value="${ship.recipientStreetLines.get(1)}">
+            </div>
+        </div>
+        <div>
+            <label for="recipientCity">recipientCity</label>
+            <input type="text" id="recipientCity" th:field="*{recipientCity}" placeholder="SPANISH FORK">
+        </div>
+        <div>
+            <label for="recipientStateOrProvinceCode">recipientStateOrProvinceCode</label>
+            <select id="recipientStateOrProvinceCode" th:field="*{recipientStateOrProvinceCode}">
+                <option th:each="stateCode : ${stateCodeTypes}" th:value="${stateCode}" th:text="${stateCode}">
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="recipientPostalCode">recipientPostalCode</label>
+            <input type="text" id="recipientPostalCode" th:field="*{recipientPostalCode}" placeholder="84660">
+        </div>
+        <div>
+            <label for="seq">seq</label>
+            <input type="number" id="seq" th:field="*{seq}" placeholder="1">
+        </div>
+        <div>
+            <label for="packageCount">packageCount</label>
+            <input type="number" id="packageCount" th:field="*{packageCount}" placeholder="1">
+        </div>
+        <div>
+            <label for="packageWeight">packageWeight</label>
+            <input type="number" id="packageWeight" th:field="*{packageWeight}" placeholder="3">
+        </div>
+        <div>
+            <label for="length">length</label>
+            <input type="number" id="length" th:field="*{length}" placeholder="16">
+        </div>
+        <div>
+            <label for="width">width</label>
+            <input type="number" id="width" th:field="*{width}" placeholder="7">
+        </div>
+        <div>
+            <label for="height">height</label>
+            <input type="number" id="height" th:field="*{height}" height="9">
+        </div>
+        <div>
+            <label for="invoice">invoice</label>
+            <input type="text" id="invoice" th:field="*{invoice}" placeholder="SO24006762123213">
+        </div>
+        <div>
+            <label for="po">po</label>
+            <input type="text" id="po" th:field="*{po}" placeholder="1983333">
+        </div>
+        <div style="display: initial">
+            <label for="isThirdParty">isThirdParty</label>
+            <input type="checkbox" id="isThirdParty" th:field="*{isThirdParty}">
+        </div>
+
+        <button class="primary">Fedex 실행</button>
+    </form>
+
+    <div class="box">
+        <textarea id="result-container" readonly th:text="${result != null ? result : ''}"></textarea>
+        <div id="label-box"></div>
+    </div>
+
+    <script>
+        const loadingDiv = document.querySelector('#loading');
+        const textareaNode = document.querySelector('.box textarea');
+        const labelBox = document.querySelector('#label-box');
+
+        const createImage = (titleName,src) => {
+            const box = document.createElement('div');
+            const title = document.createElement('h2');
+            const img = document.createElement('img');
+
+            box.classList.add('label-box');
+            img.classList.add('label-img');
+
+            title.textContent = titleName;
+            title.style.textAlign = 'center';
+
+            img.src = src;
+            img.alt = 'fedex Label';
+
+            box.appendChild(title);
+            box.appendChild(img);
+            labelBox.appendChild(box);
+        }
+
+        if(textareaNode.textContent) {
+            const result = JSON.parse(textareaNode.textContent);
+            const findError = result.responseInfo.find(res => res.errors?.length > 0);
+            const isError = !!findError;
+
+            textareaNode.textContent = JSON.stringify(result, null, 2);
+
+            if(!isError) {
+                result?.responseInfo?.forEach((res,index) => {
+                    createImage(`${index+1} Label`,res?.output?.transactionShipments?.[0].pieceResponses?.[0].packageDocuments?.[0].url);
+                });
+            }else {
+                alert('Fedex 응답 에러');
+            }
+
+        }
+    </script>
+</body>
+</html>

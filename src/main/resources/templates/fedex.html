@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>WMS Fedex Create Shipment</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        .box {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .box textarea{
+            flex-basis: 50%;
+        }
+        #loading {
+            display: none;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #ededed7a;
+        }
+        #loading .loading-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .show {
+            display: block !important;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+        #label-box {
+            display: flex;
+            flex-direction: column;
+            gap: 70px;
+        }
+        #label-box img {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="fragments::home">Home</div>
+    <div id="loading"><div class="loading-box">Loading...</div></div>
+
+    <form action="" onsubmit="return false;">
+        <div>
+            <label for="whOrderNo">WH_ORDER_NO</label>
+            <input type="text" id="whOrderNo" name="whOrderNo" value="S2024042500003">
+        </div>
+        <div>
+            <label for="orderNo">ORDER_NO</label>
+            <input type="text" id="orderNo" name="orderNo" value="SO24007545">
+        </div>
+        <div>
+            <label for="jobG">JOB_G</label>
+            <input type="text" id="jobG" name="jobG" value="21">
+        </div>
+        <button onclick="handleClick()">Fedex 실행</button>
+    </form>
+
+    <div class="box">
+        <textarea id="result-container" readonly></textarea>
+        <div id="label-box"></div>
+    </div>
+
+    <script>
+        const formNode = document.querySelector('form');
+        const resultArea = document.querySelector("#result-container");
+        const labelBox = document.querySelector("#label-box");
+        const loadingBar = document.querySelector("#loading");
+
+        const createImage = (titleName,src) => {
+            const box = document.createElement('div');
+            const title = document.createElement('h2');
+            const img = document.createElement('img');
+
+            box.classList.add('label-box');
+            img.classList.add('label-img');
+
+            title.textContent = titleName;
+            title.style.textAlign = 'center';
+
+            img.src = src;
+            img.alt = 'fedex Label';
+
+            box.appendChild(title);
+            box.appendChild(img);
+            labelBox.appendChild(box);
+        }
+
+        const handleClick = () => {
+            loadingBar.classList.add('show');
+
+            let formData = new FormData(formNode);
+
+            fetch('/fedex/create',{method:'POST',body: formData})
+                .then( async (res) => {
+                    const data = await res.json();
+
+                    labelBox.innerHTML = '';
+
+                    if( res.status !== 200 ) {
+                        alert(data.message);
+                    }
+
+                    return data;
+                })
+                .then(data => {
+                    const requestInfo = data.requestInfo;
+                    const responseInfo = data.responseInfo;
+
+                    resultArea.value = JSON.stringify(data, null, 2);
+
+                    responseInfo.forEach((res,index) => {
+                        createImage(`${index+1} Label`,res?.output?.transactionShipments?.[0].pieceResponses?.[0].packageDocuments?.[0].url);
+                    });
+                })
+                .finally(() => {
+                    loadingBar.classList.remove('show');
+                });
+        }
+    </script>
+</body>
+</html>
